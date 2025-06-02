@@ -1,27 +1,61 @@
 import Phaser from "phaser";
 
-export const AddWASDControls = (
+export const bindKeys = <
+	T,
+	K extends { [key: string]: Phaser.Input.Keyboard.Key }
+>(
 	gameObject: Phaser.GameObjects.GameObject,
-	bindVector: () => Phaser.Math.Vector2
+	keys: { [key: string]: number },
+	callback: (keyStates: Record<string, boolean>) => T
 ) => {
 	if (!gameObject.scene.input.keyboard) {
 		throw new Error("Keyboard input is not available");
 	}
 
-	const keys = {
-		W: gameObject.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
-		A: gameObject.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
-		S: gameObject.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
-		D: gameObject.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
-	};
+	var keyObjects = gameObject.scene.input.keyboard.addKeys({ ...keys }) as K;
 
-	const updateInput = () => {
-		const inputVector = bindVector();
-		inputVector.set(
-			(keys.A.isDown ? -1 : 0) + (keys.D.isDown ? 1 : 0),
-			(keys.W.isDown ? -1 : 0) + (keys.S.isDown ? 1 : 0)
+	const keyStates: { [key: string]: boolean } = {};
+	for (const key in keyObjects) {
+		keyStates[key] = false;
+		(keyObjects[key] as Phaser.Input.Keyboard.Key).on("down", () => {
+			keyStates[key] = true;
+			callback(keyStates);
+		});
+		keyObjects[key].on("up", () => {
+			keyStates[key] = false;
+			callback(keyStates);
+		});
+	}
+};
+
+interface VectorKeys extends Record<string, number> {
+	up: number;
+	down: number;
+	left: number;
+	right: number;
+}
+
+export const bindVectorKeys = (
+	gameObject: Phaser.GameObjects.GameObject,
+	keys: VectorKeys,
+	setVector: (setTo: Phaser.Math.Vector2) => void
+) => {
+	bindKeys(gameObject, keys, (keyStates) => {
+		setVector(
+			new Phaser.Math.Vector2(
+				keyStates["left"] ? -1 : keyStates["right"] ? 1 : 0,
+				keyStates["up"] ? -1 : keyStates["down"] ? 1 : 0
+			)
 		);
-	};
+	});
+};
 
-	gameObject.scene.events.on(Phaser.Scenes.Events.UPDATE, updateInput);
+export const bindKey = (
+	gameObject: Phaser.GameObjects.GameObject,
+	key: number,
+	callback: (keyState: boolean) => void
+) => {
+	bindKeys(gameObject, { key: key }, (keyStates) => {
+		callback(keyStates["key"]);
+	});
 };

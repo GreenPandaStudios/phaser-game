@@ -12,13 +12,13 @@ const gravity: Phaser.Types.Math.Vector2Like = {
 
 function gameConfig(
 	debug: boolean = false,
-	canvas: HTMLCanvasElement
+	parent: string
 ): Phaser.Types.Core.GameConfig {
 	return {
 		type: Phaser.WEBGL,
 		width: canvasSize.width,
 		height: canvasSize.height,
-		canvas,
+		parent,
 		physics: {
 			default: "arcade",
 			arcade: {
@@ -26,10 +26,13 @@ function gameConfig(
 				gravity,
 			},
 		},
+		render: {
+			pixelArt: true,
+		},
 		scene: [GameScene],
 	};
 }
 
-export function createGame(canvas: HTMLCanvasElement): Phaser.Game {
-	return new Phaser.Game(gameConfig(import.meta.env.DEV, canvas));
+export function createGame(parent: string): Phaser.Game {
+	return new Phaser.Game(gameConfig(import.meta.env.DEV, parent));
 }

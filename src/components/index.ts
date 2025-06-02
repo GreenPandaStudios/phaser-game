@@ -1,1 +1,2 @@
-export { GameCanvas } from "./GameCanvas";
+export { PhaserGame } from "./PhaserGame";
+export { ScoreKeeper } from "./ScoreKeeper";

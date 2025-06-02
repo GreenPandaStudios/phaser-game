@@ -1,1 +1,1 @@
-export { AddWASDControls } from "./Input";
+export { bindKeys, bindKey, bindVectorKeys } from "./Input";

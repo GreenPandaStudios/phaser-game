@@ -1,1 +1,2 @@
-export * from './Player';
+export { Ball } from "./Ball";
+export { DudeMonster } from "./DudeMonster";
