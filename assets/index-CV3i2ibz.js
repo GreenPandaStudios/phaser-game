@@ -97398,7 +97398,7 @@ class Cd extends me.Physics.Arcade.Sprite {
 			pt.physics.world.on("worldbounds", this.handleWorldBounds, this);
 	}
 	static preload(pt) {
-		pt.load.image("ball", "/phaser-game/phaser-game/objects/ball.png");
+		pt.load.image("ball", "/phaser-game/gameAssets/objects/ball.png");
 	}
 	handleWorldBounds(pt, tt, Et, Ft, m) {
 		Et && this.resetHitCounter();
@@ -97462,21 +97462,21 @@ class Ad extends Ld {
 		console.log("Preloading Dude_Monster assets"),
 			At.load.image(
 				"dude_monster",
-				"/phaser-game/phaser-game/Players/Dude_Monster/Dude_Monster.png"
+				"/phaser-game/gameAssets/Players/Dude_Monster/Dude_Monster.png"
 			),
 			At.load.spritesheet(
 				"dude_monster_idle",
-				"/phaser-game/phaser-game/Players/Dude_Monster/Dude_Monster_Idle_4.png",
+				"/phaser-game/gameAssets/Players/Dude_Monster/Dude_Monster_Idle_4.png",
 				{ frameWidth: 32, frameHeight: 32, endFrame: 3 }
 			),
 			At.load.spritesheet(
 				"dude_monster_run",
-				"/phaser-game/phaser-game/Players/Dude_Monster/Dude_Monster_Run_6.png",
+				"/phaser-game/gameAssets/Players/Dude_Monster/Dude_Monster_Run_6.png",
 				{ frameWidth: 32, frameHeight: 32, endFrame: 5 }
 			),
 			At.load.spritesheet(
 				"dude_monster_in_air",
-				"/phaser-game/phaser-game/Players/Dude_Monster/Dude_Monster_Jump_8.png",
+				"/phaser-game/gameAssets/Players/Dude_Monster/Dude_Monster_Jump_8.png",
 				{ frameWidth: 32, frameHeight: 32, endFrame: 6, startFrame: 4 }
 			);
 	}
@@ -97491,7 +97491,7 @@ const Kn = class Kn extends Phaser.Scene {
 	preload() {
 		this.load.image(
 			"background",
-			"/phaser-game/phaser-game/Backgrounds/background.png"
+			"/phaser-game/gameAssets/Backgrounds/background.png"
 		),
 			Ad.preload(this),
 			Cd.preload(this);
