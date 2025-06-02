@@ -187,5 +187,5 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 	 */
 
 	// Preload method is empty, but can be overridden in subclasses
-	public static preload(scene: Phaser.Scene): void {}
+	public static preload(_scene: Phaser.Scene): void {}
 }
