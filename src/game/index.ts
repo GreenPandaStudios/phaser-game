@@ -1,0 +1,1 @@
+export { createGame } from "./main";

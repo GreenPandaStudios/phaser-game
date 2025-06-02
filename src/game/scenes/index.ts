@@ -1,0 +1,1 @@
+export { GameScene } from "./GameScene";
