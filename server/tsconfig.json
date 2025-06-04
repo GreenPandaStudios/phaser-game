@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"target": "ES2020",
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"rootDir": "./",
+		"outDir": "./dist", // Where compiled JS will go
+		"esModuleInterop": true,
+		"strict": true,
+		"skipLibCheck": true,
+		"resolveJsonModule": true
+	},
+	"include": ["./**/*.ts"], // Files to include in compilation
+	"exclude": ["node_modules"]
+}
