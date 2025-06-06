@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { Player } from "./Player";
-import { EventBus } from "../EventBus";
+import { EmitEvent } from "../EventBus";
 
 export class Ball extends Phaser.Physics.Arcade.Sprite {
 	private lastHit: Date = new Date();
@@ -21,7 +21,7 @@ export class Ball extends Phaser.Physics.Arcade.Sprite {
 		this.setCircle(8); // Assuming the ball texture is 32x32 pixels
 
 		// Give the ball a lot of friction
-		this.setFriction(0.5);
+		this.setFriction(0);
 		this.setScale(2); // Scale the ball to 2x its original size
 
 		// Make the ball lightweight
@@ -68,38 +68,73 @@ export class Ball extends Phaser.Physics.Arcade.Sprite {
 		// If the ball is on the ground, apply a small upward force
 		const otherSprite = other as Phaser.Physics.Arcade.Sprite;
 
-		if (this.body && otherSprite.body) {
-			// Apply an upwards force proportional to the force of the other velocity x
-			this.setVelocityY(
-				-Phaser.Math.Linear(
-					0,
-					500,
-					Math.abs(otherSprite.body.velocity.x / 500)
-				) + otherSprite.body.velocity.y // Add some vertical force based on the other sprite's velocity
-			);
-		}
+		const isBallMovingFast = this.body && this.body.velocity.length() > 300;
+		const isOtherMovingFast =
+			otherSprite.body && otherSprite.body.velocity.length() > 300;
 
 		if (other instanceof Player) {
 			if (
-				(other.body &&
-					other.body.velocity &&
-					other.body.velocity.distance(Phaser.Math.Vector2.ZERO) < 300) || // Check if it's been at least 500 milliseconds since the last hit
-				new Date().getTime() - this.lastHit.getTime() < 500
+				!(isOtherMovingFast || isBallMovingFast) || // Check if the other sprite is not moving fast
+				new Date().getTime() - this.lastHit.getTime() < 400
 			) {
 				// If the ball is not moving, do not apply any force
-				return;
+			} else {
+				// If the other sprite is a player, increase the collision count
+				this.collisionCount++;
+				this.lastHit = new Date(); // Update the last hit time
+				EmitEvent("scored", this.collisionCount);
 			}
-			// If the other sprite is a player, increase the collision count
-			this.collisionCount++;
-			this.lastHit = new Date(); // Update the last hit time
-			EventBus.emit("ballHitPlayer", this.collisionCount);
-			return;
+		}
+
+		if (isBallMovingFast || isOtherMovingFast) {
+			this.setAngularVelocity(
+				Phaser.Math.Between(-200, 200) // Random angular velocity for a more dynamic bounce
+			);
+
+			if (this.body && otherSprite.body) {
+				const velocityMagnitude = this.body.velocity.length();
+
+				if (velocityMagnitude < 100) {
+					// If the ball is moving slowly, do not apply any force
+					return;
+				}
+				(this.body as Phaser.Physics.Arcade.Body).setVelocity(
+					Phaser.Math.Linear(
+						this.body.velocity.x + Phaser.Math.Between(-150, 150),
+						otherSprite.body.velocity.x,
+						0.25
+					),
+					Phaser.Math.Linear(
+						this.body.velocity.y -
+							(Math.abs(otherSprite.body.velocity.x) >
+								Math.abs(otherSprite.body.velocity.y * 10) &&
+							(this.body.touching.left || this.body.touching.right)
+								? Math.abs(otherSprite.body.velocity.x)
+								: 0),
+						otherSprite.body.velocity.y,
+						0.15
+					)
+				);
+
+				// Apply a small revers force to the body that hit the ball
+				const newVelocity = Phaser.Math.LinearXY(
+					otherSprite.body.velocity,
+					new Phaser.Math.Vector2(-this.body.velocity.x, -this.body.velocity.y),
+					0.25
+				);
+				(otherSprite.body as Phaser.Physics.Arcade.Body).setVelocity(
+					newVelocity.x,
+					newVelocity.y
+				);
+			}
+		} else {
+			this.setAngularVelocity(0);
 		}
 	}
 
 	public resetHitCounter(): void {
 		// Use both EventBus and scene events for compatibility
-		EventBus.emit("ballHitGround", this.collisionCount);
+		EmitEvent("gameOver", this.collisionCount);
 		this.collisionCount = 0;
 	}
 }

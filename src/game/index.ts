@@ -1,2 +1,3 @@
 export { createGame } from "./main";
-export { EventBus } from "./EventBus";
+export { EmitEvent, RemoveEvent, RegisterEvent } from "./EventBus";
+export type { ScoredEvent, GameOverEvent, SceneReadyEvent } from "./EventBus";

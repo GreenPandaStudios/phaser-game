@@ -15,7 +15,7 @@ app.get("/api/hello", (req: Request, res: Response) => {
 // --- Production Setup ---
 // Serve static files from the Vite build output directory
 if (process.env.NODE_ENV === "production") {
-	const viteBuildPath = path.resolve(__dirname, "../../dist"); // Adjust if your server's outDir is different or Vite's outDir is different
+	const viteBuildPath = path.resolve(__dirname, "../dist"); // Adjust if your server's outDir is different or Vite's outDir is different
 	app.use(express.static(viteBuildPath));
 
 	// For any other route, serve the index.html from the Vite build

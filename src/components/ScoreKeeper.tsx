@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { EventBus } from "../game";
+import { RegisterEvent, RemoveEvent } from "../game";
 
 interface IProps {
     children?: React.ReactNode;
@@ -31,13 +31,18 @@ export const ScoreKeeper = ({ children }: IProps) => {
             setTimeout(() => setIsDrooping(false), 1000);
         };
 
-        EventBus.on('ballHitGround', handleBallHitGround);
-        EventBus.on('ballHitPlayer', (count: number) => {
+        const handleScoreUpdate = (count: number) => {
             setCurrentScore(count);
-        });
+            if (count > highScore) {
+                setHighScore(count);
+            }
+        };
+
+        RegisterEvent("gameOver", handleBallHitGround);
+        RegisterEvent("scored", handleScoreUpdate);
         return () => {
-            EventBus.removeListener('ballHitGround', handleBallHitGround);
-            EventBus.removeListener('ballHitPlayer');
+            RemoveEvent("gameOver", handleBallHitGround);
+            RemoveEvent("scored", handleScoreUpdate);
         }
     }, [highScore, setHighScore, setCurrentScore]);
 

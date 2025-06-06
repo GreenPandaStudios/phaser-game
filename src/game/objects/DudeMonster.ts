@@ -1,8 +1,11 @@
 import { Player } from "./Player";
 
 export class DudeMonster extends Player {
+	readonly SPEED = 500; // Speed of the monster
 	constructor(scene: Phaser.Scene, x: number, y: number) {
 		super(scene, x, y, "dude_monster");
+		this.speed = this.SPEED; // Set the speed of the monster
+		this.maxForce = this.SPEED;
 		this.texture.setFilter(Phaser.Textures.FilterMode.NEAREST); // Pixel art filter
 		this.setScale(2); // Scale the sprite to 2x its original size
 		super.setupAnimations(
