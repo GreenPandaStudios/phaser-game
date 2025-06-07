@@ -8,6 +8,7 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 3001
+EXPOSE ${PORT:-3001}
+
 
 CMD ["sh", "-c", "npm run start"]
