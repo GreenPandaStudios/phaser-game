@@ -1,1 +1,7 @@
-export { bindKeys, bindKey, bindVectorKeys } from "./Input";
+export {
+	bindKeys,
+	bindKey,
+	bindVectorKeys,
+	bindManyKeysToVector,
+	bindManyKeys,
+} from "./Input";

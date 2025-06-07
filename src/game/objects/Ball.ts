@@ -54,13 +54,16 @@ export class Ball extends Phaser.Physics.Arcade.Sprite {
 
 	public handleWorldBounds(
 		_body: Phaser.Physics.Arcade.Body,
-		_up: boolean,
+		up: boolean,
 		down: boolean,
-		_left: boolean,
-		_right: boolean
+		left: boolean,
+		right: boolean
 	): void {
 		if (down) {
 			this.resetHitCounter();
+		}
+		if (up || left || right) {
+			this.handleScored();
 		}
 	}
 
@@ -80,9 +83,7 @@ export class Ball extends Phaser.Physics.Arcade.Sprite {
 				// If the ball is not moving, do not apply any force
 			} else {
 				// If the other sprite is a player, increase the collision count
-				this.collisionCount++;
-				this.lastHit = new Date(); // Update the last hit time
-				EmitEvent("scored", this.collisionCount);
+				this.handleScored();
 			}
 		}
 
@@ -92,35 +93,22 @@ export class Ball extends Phaser.Physics.Arcade.Sprite {
 			);
 
 			if (this.body && otherSprite.body) {
-				const velocityMagnitude = this.body.velocity.length();
-
-				if (velocityMagnitude < 100) {
-					// If the ball is moving slowly, do not apply any force
-					return;
-				}
 				(this.body as Phaser.Physics.Arcade.Body).setVelocity(
-					Phaser.Math.Linear(
-						this.body.velocity.x + Phaser.Math.Between(-150, 150),
-						otherSprite.body.velocity.x,
-						0.25
-					),
-					Phaser.Math.Linear(
-						this.body.velocity.y -
-							(Math.abs(otherSprite.body.velocity.x) >
-								Math.abs(otherSprite.body.velocity.y * 10) &&
-							(this.body.touching.left || this.body.touching.right)
-								? Math.abs(otherSprite.body.velocity.x)
-								: 0),
-						otherSprite.body.velocity.y,
-						0.15
-					)
+					this.body.velocity.x * 0.75 +
+						0.25 * otherSprite.body.velocity.x +
+						Phaser.Math.Between(-150, 150),
+					this.body.velocity.y * 0.75 -
+						Math.max(
+							-otherSprite.body.velocity.y,
+							Math.abs(otherSprite.body.velocity.x)
+						)
 				);
 
-				// Apply a small revers force to the body that hit the ball
+				// Apply a small reverse force to the body that hit the ball
 				const newVelocity = Phaser.Math.LinearXY(
 					otherSprite.body.velocity,
 					new Phaser.Math.Vector2(-this.body.velocity.x, -this.body.velocity.y),
-					0.25
+					0.3
 				);
 				(otherSprite.body as Phaser.Physics.Arcade.Body).setVelocity(
 					newVelocity.x,
@@ -136,5 +124,11 @@ export class Ball extends Phaser.Physics.Arcade.Sprite {
 		// Use both EventBus and scene events for compatibility
 		EmitEvent("gameOver", this.collisionCount);
 		this.collisionCount = 0;
+	}
+
+	public handleScored(): void {
+		this.collisionCount++;
+		this.lastHit = new Date(); // Update the last hit time
+		EmitEvent("scored", this.collisionCount);
 	}
 }

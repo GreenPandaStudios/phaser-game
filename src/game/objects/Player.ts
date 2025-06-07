@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { bindVectorKeys, bindKey } from "../input";
+import { bindManyKeysToVector, bindManyKeys } from "../input";
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
 	protected speed: number = 300;
@@ -52,25 +52,41 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
 	protected handleInput(): void {
 		// Add WASD controls
-		bindVectorKeys(
+		bindManyKeysToVector(
 			this,
-			{
-				up: Phaser.Input.Keyboard.KeyCodes.W,
-				down: Phaser.Input.Keyboard.KeyCodes.S,
-				left: Phaser.Input.Keyboard.KeyCodes.A,
-				right: Phaser.Input.Keyboard.KeyCodes.D,
-			},
+			[
+				{
+					up: Phaser.Input.Keyboard.KeyCodes.W,
+					down: Phaser.Input.Keyboard.KeyCodes.S,
+					left: Phaser.Input.Keyboard.KeyCodes.A,
+					right: Phaser.Input.Keyboard.KeyCodes.D,
+				},
+				{
+					up: Phaser.Input.Keyboard.KeyCodes.UP,
+					down: Phaser.Input.Keyboard.KeyCodes.DOWN,
+					left: Phaser.Input.Keyboard.KeyCodes.LEFT,
+					right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
+				},
+			],
 			(setTo: Phaser.Math.Vector2) => {
 				this.inputVector = setTo;
 			}
 		);
 
-		bindKey(this, Phaser.Input.Keyboard.KeyCodes.SPACE, (isDown) => {
-			this.holdingJump = isDown; // Track if the jump key is held down
-			if (isDown) {
-				this.jump();
+		bindManyKeys(
+			this,
+			[
+				Phaser.Input.Keyboard.KeyCodes.SPACE,
+				Phaser.Input.Keyboard.KeyCodes.W,
+				Phaser.Input.Keyboard.KeyCodes.UP,
+			],
+			(isDown) => {
+				this.holdingJump = isDown; // Track if the jump key is held down
+				if (isDown) {
+					this.jump();
+				}
 			}
-		});
+		);
 	}
 
 	/**

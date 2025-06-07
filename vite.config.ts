@@ -15,6 +15,6 @@ export default defineConfig({
 		},
 	},
 	build: {
-		outDir: "server/vite-build", // Output directory for the Vite build
+		outDir: "server/dist/vite-build", // Output directory for the Vite build
 	},
 });

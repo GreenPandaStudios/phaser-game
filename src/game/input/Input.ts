@@ -50,6 +50,45 @@ export const bindVectorKeys = (
 	});
 };
 
+export const bindManyKeysToVector = (
+	gameObject: Phaser.GameObjects.GameObject,
+	keys: [VectorKeys, ...VectorKeys[]],
+	setVector: (setTo: Phaser.Math.Vector2) => void
+) => {
+	// Create a new keyset that maps each key to a named key for tracking
+	const combinedKeys: Record<string, number> = {};
+
+	// For each set of keys, add them to the combined keys object with a suffix
+	keys.forEach((keySet, index) => {
+		for (const key in keySet) {
+			combinedKeys[`${key}-${index}`] = keySet[key];
+		}
+	});
+
+	bindKeys(gameObject, combinedKeys, (keyStates) => {
+		// Calculate the vector based on the key states
+		const x = Object.keys(keyStates).some(
+			(key) => key.startsWith("left-") && keyStates[key]
+		)
+			? -1
+			: Object.keys(keyStates).some(
+					(key) => key.startsWith("right-") && keyStates[key]
+			  )
+			? 1
+			: 0;
+		const y = Object.keys(keyStates).some(
+			(key) => key.startsWith("up-") && keyStates[key]
+		)
+			? -1
+			: Object.keys(keyStates).some(
+					(key) => key.startsWith("down-") && keyStates[key]
+			  )
+			? 1
+			: 0;
+		setVector(new Phaser.Math.Vector2(x, y));
+	});
+};
+
 export const bindKey = (
 	gameObject: Phaser.GameObjects.GameObject,
 	key: number,
@@ -57,5 +96,19 @@ export const bindKey = (
 ) => {
 	bindKeys(gameObject, { key: key }, (keyStates) => {
 		callback(keyStates["key"]);
+	});
+};
+
+export const bindManyKeys = (
+	gameObject: Phaser.GameObjects.GameObject,
+	keys: number[],
+	callback: (keyState: boolean) => void
+) => {
+	const keyMap: Record<string, number> = {};
+	keys.forEach((key, index) => {
+		keyMap[`key-${index}`] = key;
+	});
+	bindKeys(gameObject, keyMap, (keyStates) => {
+		callback(Object.values(keyStates).some((state) => state));
 	});
 };
