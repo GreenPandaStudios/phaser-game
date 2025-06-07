@@ -1,0 +1,4 @@
+div#game-container canvas {
+	display: block;
+	width: 100%;
+}

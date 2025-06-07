@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { RegisterEvent, RemoveEvent } from "../game";
+import "./ScoreKeeper.css";
 
 interface IProps {
     children?: React.ReactNode;
@@ -55,60 +56,33 @@ export const ScoreKeeper = ({ children }: IProps) => {
     }, [currentScore]);
 
     return (
-        <div className="score-container" style={{
-            background: 'rgba(0, 0, 0, 0.7)',
-            padding: '15px',
-            borderRadius: '8px',
-            color: '#00FF00', // Arcade green
-            fontFamily: '"Press Start 2P", Courier, monospace', // Retro game font
-            boxShadow: '0 0 10px #00FF00', // Neon glow effect
-            margin: '10px',
-            textAlign: 'center',
-            border: '2px solid #00FF00',
-            textTransform: 'uppercase',
-            letterSpacing: '2px',
-            animation: isShaking ? 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both' : 'none',
-            transform: 'translate3d(0, 0, 0)',
-            perspective: '1000px'
-        }}>
-            <style>
-                {`
-                @keyframes shake {
-                    10%, 90% { transform: translate3d(-1px, 0, 0); }
-                    20%, 80% { transform: translate3d(2px, 0, 0); }
-                    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-                    40%, 60% { transform: translate3d(4px, 0, 0); }
-                }
-                @keyframes droop {
-                    0% { transform: rotate(0deg); }
-                    50% { transform: rotate(-10deg); }
-                    100% { transform: rotate(0deg); }
-                }
-                `}
-            </style>
-
-            <div style={{
-                borderTop: '1px dashed #00FF00',
-                paddingTop: '5px'
-            }}>
-                HIGH SCORE: <span style={{
-                    fontWeight: 'bold',
-                    color: '#FFFF00', // Yellow for high score
-                    fontSize: '1.2em'
-                }}>{highScore}</span>
+        <>
+            <div className={`mobile-score-section ${isDrooping ? 'drooping' : ''}`}>
+                CURRENT SCORE: <span
+                    className="current-score"
+                    style={{
+                        fontSize: `${1.2 + (currentScore * 0.05)}em`
+                    }}
+                >
+                    {currentScore}
+                </span>
             </div>
-            {children}
-            <div style={{
-                fontSize: '0.8em',
-                marginBottom: '5px',
-                animation: isDrooping ? 'droop 1s ease' : 'none',
-                display: 'inline-block'
-            }}>
-                CURRENT SCORE: <span style={{
-                    fontSize: `${1.2 + (currentScore * 0.25)}em`,
-                    transition: 'font-size 0.3s ease'
-                }}>{currentScore}</span>
+            <div className={`score-container ${isShaking ? 'shaking' : ''}`}>
+                <div className="high-score-section">
+                    HIGH SCORE: <span className="high-score">{highScore}</span>
+                </div>
+                {children}
+                <div className={`current-score-section ${isDrooping ? 'drooping' : ''}`}>
+                    CURRENT SCORE: <span
+                        className="current-score"
+                        style={{
+                            fontSize: `${1.2 + (currentScore * 0.25)}em`
+                        }}
+                    >
+                        {currentScore}
+                    </span>
+                </div>
             </div>
-        </div>
+        </>
     );
 };

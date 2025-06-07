@@ -1,5 +1,7 @@
 import { forwardRef, useEffect, useLayoutEffect, useRef } from 'react';
 import { createGame, RegisterEvent, RemoveEvent } from '../game';
+import "./PhaserGame.css";
+
 
 export interface IRefPhaserGame {
     game: Phaser.Game | null;

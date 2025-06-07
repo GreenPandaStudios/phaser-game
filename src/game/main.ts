@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { GameScene } from "./scenes";
+
 const canvasSize = {
 	width: 800,
 	height: 600,
