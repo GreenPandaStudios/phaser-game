@@ -64,8 +64,10 @@ export class DudeMonster extends Player {
 				// If touching on the right side of the screen, move right
 				else if (isOnRightSide(touchPosition, this.scene.cameras.main.width)) {
 					touchInputVector.add(Phaser.Math.Vector2.RIGHT); // Move right
-				} else {
-					touchIsJumping = true; // If touching in the middle, jump
+				}
+				if (touchPosition.y < this.scene.cameras.main.height / 2) {
+					// If touching in the upper half of the screen, jump
+					touchIsJumping = true; // Set jumping state
 				}
 			}
 
