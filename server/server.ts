@@ -2,8 +2,7 @@ import express, { Request, Response } from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 const app = express();
-const port = process.env.PORT || 3001; // Backend server port
-console.log("--- RUNNING LATEST server.ts @ 10:48 AM ---");
+const port = process.env.PORT || 8080; // Backend server port
 // --- ES Module Boilerplate for __dirname ---
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
