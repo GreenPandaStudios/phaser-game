@@ -1,4 +1,5 @@
 import { Player } from "./Player";
+import { bindTouch } from "../input";
 
 export class DudeMonster extends Player {
 	readonly SPEED = 500; // Speed of the monster
@@ -29,6 +30,63 @@ export class DudeMonster extends Player {
 				yoyo: true, // Make the jump animation loop up and down
 			}
 		);
+	}
+
+	public override handleInput(): void {
+		super.handleInput();
+
+		// Add mobile controls for this game
+		bindTouch(this, (touchPositions) => {
+			let touchInputVector = new Phaser.Math.Vector2(0, 0);
+			let touchIsJumping = false;
+
+			function isOnRightSide(
+				touchPosition: Phaser.Math.Vector2,
+				width: number
+			): boolean {
+				return touchPosition.x > 2 * (width / 3);
+			}
+
+			function isOnLeftSide(
+				touchPosition: Phaser.Math.Vector2,
+				width: number
+			): boolean {
+				return touchPosition.x < width / 3;
+			}
+
+			console.log("Touch positions:", touchPositions);
+
+			for (const touchPosition of touchPositions) {
+				// If touching on the right side of the screen, move right
+				if (isOnLeftSide(touchPosition, this.scene.cameras.main.width)) {
+					touchInputVector.add(Phaser.Math.Vector2.LEFT); // Move left
+				}
+				// If touching on the right side of the screen, move right
+				else if (isOnRightSide(touchPosition, this.scene.cameras.main.width)) {
+					touchInputVector.add(Phaser.Math.Vector2.RIGHT); // Move right
+				} else {
+					touchIsJumping = true; // If touching in the middle, jump
+				}
+			}
+
+			// Normalize the vector to ensure consistent speed
+			if (touchInputVector.length() > 0) {
+				touchInputVector = touchInputVector.normalize();
+			}
+			// Set the input vector to the player
+			this.inputVector = touchInputVector;
+
+			// If the player is jumping, set the jump state
+			if (touchIsJumping) {
+				if (!this.isOnGround) {
+					this.holdingJump = true; // Set holding jump to true
+				} else {
+					this.jump(); // Jump if on the ground
+				}
+			} else {
+				this.holdingJump = false; // Reset holding jump if not jumping
+			}
+		});
 	}
 
 	/**

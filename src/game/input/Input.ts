@@ -89,6 +89,38 @@ export const bindManyKeysToVector = (
 	});
 };
 
+export const bindTouch = (
+	gameObject: Phaser.GameObjects.GameObject,
+	callback: (touchPositions: Phaser.Math.Vector2[]) => void
+) => {
+	const touchPositions: Map<number, Phaser.Math.Vector2> = new Map();
+
+	if (!gameObject.scene.input) {
+		throw new Error("Touch input is not available");
+	}
+	gameObject.scene.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+		touchPositions.set(
+			pointer.id,
+			new Phaser.Math.Vector2(pointer.x, pointer.y)
+		);
+		callback(Array.from(touchPositions.values()));
+	});
+	gameObject.scene.input.on("pointermove", (pointer: Phaser.Input.Pointer) => {
+		// Handle touch input updates
+		if (!pointer.isDown) return;
+		touchPositions.set(
+			pointer.id,
+			new Phaser.Math.Vector2(pointer.x, pointer.y)
+		);
+		callback(Array.from(touchPositions.values()));
+	});
+	gameObject.scene.input.on("pointerup", (pointer: Phaser.Input.Pointer) => {
+		// Handle touch input updates
+		touchPositions.delete(pointer.id);
+		callback(Array.from(touchPositions.values()));
+	});
+};
+
 export const bindKey = (
 	gameObject: Phaser.GameObjects.GameObject,
 	key: number,

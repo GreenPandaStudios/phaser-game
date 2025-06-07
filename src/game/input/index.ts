@@ -4,4 +4,5 @@ export {
 	bindVectorKeys,
 	bindManyKeysToVector,
 	bindManyKeys,
+	bindTouch,
 } from "./Input";
