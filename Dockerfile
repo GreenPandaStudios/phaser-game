@@ -35,7 +35,7 @@ RUN cd server && npm install --production
 
 # Copy built assets from build stage
 COPY --from=build /app/server/dist ./server/dist
-COPY --from=build /app/server/vite-build ./server/vite-build
+COPY --from=build /app/server/dist/vite-build ./server/dist/vite-build
 
 EXPOSE ${PORT:-8080}
 
