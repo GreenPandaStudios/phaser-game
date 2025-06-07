@@ -9,7 +9,7 @@ export default defineConfig({
 		proxy: {
 			// Proxy API requests starting with '/api' to the Node.js server
 			"/api": {
-				target: "http://localhost:3001", // Backend server URL
+				target: "http://localhost:8080", // Backend server URL
 				changeOrigin: true,
 			},
 		},
