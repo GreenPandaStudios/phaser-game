@@ -2,9 +2,7 @@ import admin from "firebase-admin";
 
 admin.initializeApp({
 	credential: admin.credential.cert(
-		process.env.FIREBASE_SERVICE_ACCOUNT_KEY
-			? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY)
-			: {}
+		require("/secrets/phaser-firebase-secret.json")
 	),
 });
 
