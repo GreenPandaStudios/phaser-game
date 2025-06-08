@@ -10,13 +10,14 @@ interface HighScoreSubmission {
 
 interface UsernameForHighScorePopupProps {
     onUsernameSubmit?: (username: string) => void;
+    children?: React.ReactNode;
 }
 
 /**
  * A component that shows a popup when the user gets a high score,
  * allowing them to enter their username for the leaderboard.
  */
-export const UsernameForHighScorePopup: React.FC<UsernameForHighScorePopupProps> = ({ onUsernameSubmit }) => {
+export const UsernameForHighScorePopup: React.FC<UsernameForHighScorePopupProps> = ({ onUsernameSubmit, children }) => {
     const [isVisible, setIsVisible] = useState(false);
     const [username, setUsername] = useState('');
     const [inputValue, setInputValue] = useState('');
@@ -103,7 +104,7 @@ export const UsernameForHighScorePopup: React.FC<UsernameForHighScorePopupProps>
 
     // Return the component - only render if visible
     if (!isVisible) {
-        return null;
+        return children;
     }
 
     return (

@@ -69,8 +69,7 @@ export const ScoreKeeper = ({ children }: IProps) => {
 
 
     return (
-        <>
-
+        <UsernameForHighScorePopup >
             <div className={`score-container ${isShaking ? 'shaking' : ''}`}>
                 <div className={`current-score-section ${isDrooping ? 'drooping' : ''}`}>
                     CURRENT SCORE: <span
@@ -100,7 +99,6 @@ export const ScoreKeeper = ({ children }: IProps) => {
                 </div>
 
             </div >
-            <UsernameForHighScorePopup />
-        </>
+        </UsernameForHighScorePopup>
     );
 };
