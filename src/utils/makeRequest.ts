@@ -7,13 +7,19 @@ export async function makeRequest<TRequest, TResponse>(
 	path: string,
 	data: TRequest
 ): Promise<TResponse> {
-	const response = await fetch(path, {
+	const options: RequestInit = {
 		method: "POST",
-		headers: {
+	};
+
+	if (data !== undefined) {
+		options.body = JSON.stringify(data);
+		options.headers = {
 			"Content-Type": "application/json",
-		},
-		body: JSON.stringify(data),
-	});
+		};
+	}
+
+	const response = await fetch(path, options);
+
 	if (!response.ok) {
 		throw new Error(`HTTP error! status: ${response.status}`);
 	}

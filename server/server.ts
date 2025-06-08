@@ -13,6 +13,8 @@ const viteBuildPath = path.join(__dirname, "vite-build");
 
 // Middleware to parse JSON bodies
 app.use(express.static(viteBuildPath));
+// Middleware to parse JSON bodies
+app.use(express.json());
 
 // Leaderboard routes
 app.post("/api/leaderboard", loadLeaderboard);

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { RegisterEvent, RemoveEvent } from "../game";
+import { UsernameForHighScorePopup } from "./UsernameForHighScorePopup";
 import "./ScoreKeeper.css";
-import { Link } from "react-router-dom";
 
 interface IProps {
     children?: React.ReactNode;
@@ -15,15 +15,11 @@ export const ScoreKeeper = ({ children }: IProps) => {
         return savedScore ? parseInt(savedScore, 10) : 0;
     });
 
+
     // Animation states
     const [isShaking, setIsShaking] = useState(false);
     const [isDrooping, setIsDrooping] = useState(false);
     const [wasHardHit, setWasHardHit] = useState(false);
-
-    // Update localStorage when high score changes
-    useEffect(() => {
-        localStorage.setItem('highScore', highScore.toString());
-    }, [highScore]);
 
     useEffect(() => {
         const handleBallHitGround = (count: number) => {
@@ -71,6 +67,7 @@ export const ScoreKeeper = ({ children }: IProps) => {
         }
     }, [multiplier]);
 
+
     return (
         <>
 
@@ -103,6 +100,7 @@ export const ScoreKeeper = ({ children }: IProps) => {
                 </div>
 
             </div >
+            <UsernameForHighScorePopup />
         </>
     );
 };

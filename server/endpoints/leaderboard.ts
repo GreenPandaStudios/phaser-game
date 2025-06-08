@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { db } from "../firebase/index.js";
 export interface LeaderboardEntry {
 	username: string;
 	score: number;
@@ -6,11 +7,16 @@ export interface LeaderboardEntry {
 
 export const loadLeaderboard = async (req: Request, res: Response) => {
 	try {
-		const leaderboard = [
-			{ username: "August", score: 202 },
-			{ username: "Ru", score: 108 },
-			{ username: "Ben", score: 13 },
-		];
+		const leaderboardSnapshot = await db
+			.collection("leaderboard")
+			.orderBy("score", "desc")
+			.limit(10)
+			.get();
+		const leaderboard: LeaderboardEntry[] = [];
+		leaderboardSnapshot.forEach((doc) => {
+			const data = doc.data() as LeaderboardEntry;
+			leaderboard.push({ username: data.username, score: data.score });
+		});
 		return res.json(leaderboard); // Return the leaderboard as JSON
 	} catch (error) {
 		console.error("Error loading leaderboard:", error);
@@ -19,27 +25,34 @@ export const loadLeaderboard = async (req: Request, res: Response) => {
 };
 
 export const addScore = async (req: Request, res: Response) => {
-	const { username } = req.body;
+	const { username, score } = req.body;
 
-	// Get the score from the cookie
-	const scoreCookie = req.cookies.score || "0"; // Default to 0 if not set
-	const score = parseInt(scoreCookie, 10) || 0; // Parse the score from the cookie
-
-	if (!username || score === 0) {
-		return res.status(400); // Bad Request if username is missing or score is 0
-	}
-
+	// Decrypt the score using the provided encryption method
+	// Base64 decode the score
+	// Ensure score is a string before decoding
+	const scoreString = typeof score === "string" ? score : String(score);
 	try {
-		// Set the cookie back to zero
-		res.cookie("score", "0", { maxAge: 900000, httpOnly: true }); // Reset the score cookie
+		const decodedScore = Buffer.from(scoreString, "base64").toString();
+		// Convert the decoded score to a number
+		const numericScore = parseInt(decodedScore, 10);
 
-		return res.json({
-			message: `Score for ${username} added successfully!`,
-			username,
-			score,
-		}); // Return a success message with the username and score
+		// Check if the conversion was successful
+		if (isNaN(numericScore)) {
+			return res.status(400).json({ error: "Invalid score format" });
+		}
+
+		// Update the score in the request body with the decoded value
+		req.body.score = numericScore;
+
+		try {
+			await db.collection("leaderboard").add({ username, score: numericScore });
+			res.status(200).json({ message: "Score added successfully" });
+		} catch (error) {
+			console.error("Error adding score:", error);
+			res.status(500).json({ error: "Failed to add score" });
+		}
 	} catch (error) {
-		console.error("Error adding score:", error);
-		res.status(500);
+		console.error("Error decoding score:", error);
+		return res.status(400).json({ error: "Failed to decode score" });
 	}
 };
