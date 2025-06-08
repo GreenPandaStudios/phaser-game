@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import path from "path";
 import { fileURLToPath } from "url";
+import { loadLeaderboard, addScore, updateScore } from "./endpoints/index.js";
 const app = express();
 const port = process.env.PORT || 8080; // Backend server port
 // --- ES Module Boilerplate for __dirname ---
@@ -13,10 +14,10 @@ const viteBuildPath = path.join(__dirname, "vite-build");
 // Middleware to parse JSON bodies
 app.use(express.static(viteBuildPath));
 
-// API routes
-app.get("/api/hello", (_req: Request, res: Response) => {
-	res.json({ message: "Hello from the Node.js server!" });
-});
+// Leaderboard routes
+app.post("/api/leaderboard", loadLeaderboard);
+app.post("/api/leaderboard/addScore", addScore);
+app.post("/api/score/updateScore", updateScore);
 
 // For any other route, serve the index.html from the Vite build
 app.get("*", (_req, res) => {

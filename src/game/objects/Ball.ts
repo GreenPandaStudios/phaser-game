@@ -4,6 +4,7 @@ import { EmitEvent } from "../EventBus";
 
 export class Ball extends Phaser.Physics.Arcade.Sprite {
 	private lastHit: Date = new Date();
+	private multiplyer: number = 1; // Multiplier for scoring, can be adjusted
 	constructor(scene: Phaser.Scene, x: number, y: number) {
 		super(scene, x, y, "ball");
 
@@ -75,18 +76,6 @@ export class Ball extends Phaser.Physics.Arcade.Sprite {
 		const isOtherMovingFast =
 			otherSprite.body && otherSprite.body.velocity.length() > 300;
 
-		if (other instanceof Player) {
-			if (
-				!(isOtherMovingFast || isBallMovingFast) || // Check if the other sprite is not moving fast
-				new Date().getTime() - this.lastHit.getTime() < 400
-			) {
-				// If the ball is not moving, do not apply any force
-			} else {
-				// If the other sprite is a player, increase the collision count
-				this.handleScored();
-			}
-		}
-
 		if (isBallMovingFast || isOtherMovingFast) {
 			this.setAngularVelocity(
 				Phaser.Math.Between(-200, 200) // Random angular velocity for a more dynamic bounce
@@ -118,17 +107,40 @@ export class Ball extends Phaser.Physics.Arcade.Sprite {
 		} else {
 			this.setAngularVelocity(0);
 		}
+
+		if (other instanceof Player) {
+			if (
+				!(isOtherMovingFast || isBallMovingFast) || // Check if the other sprite is not moving fast
+				new Date().getTime() - this.lastHit.getTime() < 400
+			) {
+				// If the ball is not moving, do not apply any force
+			} else {
+				// If the ball is moving fast, increase the multiplier
+				if (this.body && this.body.velocity.length() > 800) {
+					this.multiplyer = Math.min(this.multiplyer + 1, 5); // Cap the multiplier at 5
+				} else {
+					this.multiplyer = 1; // Cap the multiplier at 1
+				}
+
+				// If the other sprite is a player, increase the collision count
+				this.handleScored();
+			}
+		}
 	}
 
 	public resetHitCounter(): void {
 		// Use both EventBus and scene events for compatibility
 		EmitEvent("gameOver", this.collisionCount);
 		this.collisionCount = 0;
+		this.multiplyer = 1; // Reset the multiplier
 	}
 
 	public handleScored(): void {
-		this.collisionCount++;
+		this.collisionCount += this.multiplyer;
 		this.lastHit = new Date(); // Update the last hit time
-		EmitEvent("scored", this.collisionCount);
+		EmitEvent("scored", {
+			score: this.collisionCount,
+			multiplier: this.multiplyer,
+		});
 	}
 }

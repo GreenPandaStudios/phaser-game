@@ -1,4 +1,29 @@
-div#game-container canvas {
-	display: block;
+div#game-container {
+	background-color: #000;
+	border-radius: 8px;
+	overflow: hidden;
+	position: relative;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+	margin: 1rem auto;
 	width: 100%;
+	max-width: 1000px;
+	aspect-ratio: 16 / 9;
+}
+
+div#game-container canvas {
+	display: block !important;
+	width: 100% !important;
+	height: 100% !important;
+	object-fit: contain;
+}
+
+div#game-container:before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 2px;
+	background: linear-gradient(90deg, #646cff, #535bf2);
+	z-index: 10;
 }

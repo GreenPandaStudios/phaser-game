@@ -54,8 +54,6 @@ export class DudeMonster extends Player {
 				return touchPosition.x < width / 3;
 			}
 
-			console.log("Touch positions:", touchPositions);
-
 			for (const touchPosition of touchPositions) {
 				// If touching on the right side of the screen, move right
 				if (isOnLeftSide(touchPosition, this.scene.cameras.main.width)) {
@@ -95,7 +93,6 @@ export class DudeMonster extends Player {
 	 * Preload the assets for the Dude_Monster player.
 	 */
 	public static override preload(scene: Phaser.Scene): void {
-		console.log("Preloading Dude_Monster assets");
 		scene.load.image(
 			"dude_monster",
 			"/gameAssets/Players/Dude_Monster/Dude_Monster.png"

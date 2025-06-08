@@ -1,35 +1,62 @@
 /* ScoreKeeper Component Styles */
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+
 .score-container {
-	background: rgba(0, 0, 0, 0.7);
-	padding: 12px;
-	border-radius: 8px;
-	color: #00ff00; /* Arcade green */
+	background: rgba(20, 20, 35, 0.85);
+	padding: 10px 16px;
+	border-radius: var(--border-radius);
+	color: #5eff5a; /* Softer arcade green */
 	font-family: "Press Start 2P", Courier, monospace; /* Retro game font */
-	box-shadow: 0 0 10px #00ff00; /* Neon glow effect */
-	margin: 8px auto;
+	box-shadow: 0 0 15px rgba(94, 255, 90, 0.25); /* Subtle neon glow effect */
+	margin: 15px auto;
 	text-align: center;
-	border: 2px solid #00ff00;
+	border: 1px solid #5eff5a;
 	text-transform: uppercase;
 	letter-spacing: 1px;
-	transform: translate3d(0, 0, 0);
-	perspective: 1000px;
-	width: calc(100% - 20px);
-	max-width: 800px;
-	max-height: 100vh;
+	backdrop-filter: blur(5px);
+	-webkit-backdrop-filter: blur(5px);
+	width: calc(100% - 30px);
+	max-width: 1000px;
 	position: fixed;
-	top: 10px;
+	top: 85px;
 	left: 0;
 	right: 0;
 	z-index: 100;
 }
 
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(-20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
 @media (max-width: 600px) {
 	.score-container {
 		top: auto;
-		bottom: 10px;
+		bottom: 20px;
 		padding: 8px;
 		max-width: 90%;
+		font-size: 0.7rem;
+		display: flex;
+		flex-direction: column;
+		gap: 5px;
 	}
+}
+.multiplier-section {
+	position: fixed;
+	top: 10rem;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	text-align: center;
+}
+
+.multiplier-section.hard-hit {
+	animation: hard-hit 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
 .score-container.shaking {
@@ -37,22 +64,30 @@
 }
 
 .high-score-section {
-	border-top: 1px dashed #00ff00;
-	padding-top: 5px;
-	margin-top: 5px;
-	font-size: 0.9rem;
+	border-top: 1px dashed #5eff5a;
+	padding-top: 8px;
+	margin-top: 8px;
+	font-size: 0.8rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
 }
 
 .high-score {
 	font-weight: bold;
-	color: #ffff00; /* Yellow for high score */
-	font-size: 1.1rem;
+	color: #fff64d; /* Softer yellow for high score */
+	font-size: 1rem;
+	text-shadow: 0 0 5px rgba(255, 246, 77, 0.5);
 }
 
 .current-score-section {
 	font-size: 0.8rem;
-	margin-bottom: 5px;
-	display: inline-block;
+	margin-bottom: 8px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
 }
 
 .current-score-section.drooping {
@@ -60,8 +95,10 @@
 }
 
 .current-score {
-	transition: font-size 0.3s ease;
-	font-size: 1rem;
+	transition: all 0.3s ease;
+	font-size: 1.2rem;
+	display: inline-block;
+	padding: 0 8px;
 }
 
 @media (max-width: 480px) {
@@ -82,34 +119,50 @@
 
 @media (max-width: 600px) {
 	.mobile-score-section {
+		display: flex;
 		position: fixed;
 		top: 10px;
 		left: 0;
 		right: 0;
-		background: rgba(0, 0, 0, 0.7);
-		color: #00ff00;
-		border-radius: 8px;
-		padding: 8px;
+		background: rgba(26, 26, 46, 0.95);
+		color: #5eff5a;
+		border-radius: var(--border-radius);
+		padding: 8px 10px;
 		margin: 0 auto;
-		width: 90%;
-		max-width: 300px;
-		border: 2px solid #00ff00;
-		box-shadow: 0 0 8px #00ff00;
+		width: 85%;
+		max-width: 250px;
+		border: 1px solid #5eff5a;
+		box-shadow: 0 0 8px rgba(94, 255, 90, 0.3);
 		z-index: 101;
+		backdrop-filter: blur(3px);
+		font-size: 0.8rem;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+		font-family: "Press Start 2P", Courier, monospace;
+		animation: fadeIn 0.5s ease;
 	}
-	.current-score-section {
-		display: none;
+
+	.mobile-score-section .current-score {
+		color: #fff64d; /* Same yellow as high score */
+		text-shadow: 0 0 5px rgba(255, 246, 77, 0.5);
+		font-weight: bold;
+		transition: all 0.3s ease;
+	}
+
+	.mobile-score-section.drooping {
+		animation: droop 1s ease;
 	}
 }
 
 @keyframes shake {
 	10%,
 	90% {
-		transform: translate3d(-1px, 0, 0);
+		transform: translate3d(-2px, 0, 0);
 	}
 	20%,
 	80% {
-		transform: translate3d(2px, 0, 0);
+		transform: translate3d(3px, 0, 0);
 	}
 	30%,
 	50%,
@@ -131,5 +184,20 @@
 	}
 	100% {
 		transform: rotate(0deg);
+	}
+}
+
+@keyframes hard-hit {
+	0% {
+		font-size: 100%;
+		opacity: 1;
+	}
+	50% {
+		font-size: 120%;
+		opacity: 0.8;
+	}
+	100% {
+		font-size: 100%;
+		opacity: 1;
 	}
 }

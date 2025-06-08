@@ -1,42 +1,209 @@
+/* We'll use the variables from index.css, no need to redefine them here */
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+	background-color: var(--dark-bg);
+	color: var(--text-light);
+}
+
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+	max-width: 100%;
+	margin: 0 auto;
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+
+.content-container {
+	max-width: 1280px;
+	width: 100%;
+	margin: 0 auto;
+	padding: 1rem;
+	box-sizing: border-box;
+}
+
+/* Navbar Styling */
+.navbar {
+	background-color: rgba(20, 20, 35, 0.95);
+	height: 70px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: sticky;
+	top: 0;
+	z-index: 999;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+}
+
+.navbar-container {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+	max-width: 1280px;
+	padding: 0 24px;
+}
+
+.navbar-logo {
+	color: var(--text-light);
+	font-size: 1.8rem;
+	font-weight: bold;
+	margin: 0;
+	cursor: pointer;
+	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+	letter-spacing: 1px;
+}
+
+.navbar-menu {
+	display: flex;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.navbar-item {
+	padding: 0 1rem;
+}
+
+.navbar-link {
+	color: var(--text-light);
+	text-decoration: none;
+	font-size: 1.1rem;
+	padding: 0.4rem 0.8rem;
+	transition: all 0.3s ease;
+	border-radius: var(--border-radius);
+	font-weight: 500;
+}
+
+.navbar-link:hover {
+	color: var(--primary-color);
+	background-color: rgba(255, 255, 255, 0.1);
+	border-bottom: 2px solid var(--primary-color);
 }
 
 .logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+	height: 6em;
+	padding: 1.5em;
+	will-change: filter;
+	transition: filter 300ms;
 }
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+	filter: drop-shadow(0 0 2em #646cffaa);
 }
 .logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+	filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
 @keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+	a:nth-of-type(2) .logo {
+		animation: logo-spin infinite 20s linear;
+	}
 }
 
 .card {
-  padding: 2em;
+	padding: 2em;
+	background-color: var(--card-bg);
+	border-radius: var(--border-radius);
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+	margin-bottom: 1.5rem;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
 }
 
 .read-the-docs {
-  color: #888;
+	color: var(--text-muted);
+	font-size: 0.9rem;
+}
+
+/* Game Container Styles */
+.game-container {
+	width: 100%;
+	max-width: 900px;
+	margin: 2rem auto;
+	border-radius: var(--border-radius);
+	overflow: hidden;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Leaderboard Styles */
+.leaderboard {
+	background-color: white;
+	border-radius: var(--border-radius);
+	padding: 1.5rem;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+	max-width: 800px;
+	margin: 2rem auto;
+}
+
+.leaderboard-title {
+	font-size: 2rem;
+	margin-bottom: 1.5rem;
+	color: var(--dark-bg);
+	font-weight: bold;
+}
+
+.leaderboard-table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+	padding: 1rem;
+	text-align: left;
+	border-bottom: 1px solid #eee;
+}
+
+.leaderboard-table th {
+	background-color: var(--dark-bg);
+	color: var(--text-light);
+}
+
+.leaderboard-table tr:nth-child(even) {
+	background-color: #f9f9f9;
+}
+
+.leaderboard-table tr:hover {
+	background-color: #f0f0f0;
+}
+
+/* Button Styles */
+.button {
+	background-color: var(--primary-color);
+	color: white;
+	border: none;
+	padding: 0.6em 1.2em;
+	font-size: 1em;
+	font-weight: 500;
+	font-family: inherit;
+	cursor: pointer;
+	transition: background-color 0.25s;
+	border-radius: var(--border-radius);
+}
+
+.button:hover {
+	background-color: var(--primary-hover);
+}
+
+.button:focus,
+.button:focus-visible {
+	outline: 4px auto -webkit-focus-ring-color;
 }
