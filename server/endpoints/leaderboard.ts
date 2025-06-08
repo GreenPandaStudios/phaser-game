@@ -7,11 +7,9 @@ export interface LeaderboardEntry {
 export const loadLeaderboard = async (req: Request, res: Response) => {
 	try {
 		const leaderboard = [
-			{ username: "Alice", score: 150 },
-			{ username: "Bob", score: 120 },
-			{ username: "Charlie", score: 100 },
-			{ username: "Diana", score: 90 },
-			{ username: "Ethan", score: 80 },
+			{ username: "August", score: 202 },
+			{ username: "Ru", score: 108 },
+			{ username: "Ben", score: 13 },
 		];
 		return res.json(leaderboard); // Return the leaderboard as JSON
 	} catch (error) {
