@@ -5,6 +5,7 @@ export interface LeaderboardEntry {
 	score: number;
 }
 
+
 export const loadLeaderboard = async (req: Request, res: Response) => {
 	try {
 		const leaderboardSnapshot = await db
