@@ -8,7 +8,7 @@ export interface LeaderboardEntry {
 export const loadLeaderboard = async (req: Request, res: Response) => {
 	try {
 		const leaderboardSnapshot = await db
-			.collection("leaderboard")
+			.collection("highscore")
 			.orderBy("score", "desc")
 			.limit(10)
 			.get();
@@ -45,7 +45,7 @@ export const addScore = async (req: Request, res: Response) => {
 		req.body.score = numericScore;
 
 		try {
-			await db.collection("leaderboard").add({ username, score: numericScore });
+			await db.collection("highscore").add({ username, score: numericScore });
 			res.status(200).json({ message: "Score added successfully" });
 		} catch (error) {
 			console.error("Error adding score:", error);
