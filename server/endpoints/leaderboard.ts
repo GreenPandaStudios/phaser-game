@@ -12,6 +12,7 @@ export const loadLeaderboard = async (req: Request, res: Response) => {
 		const leaderboardSnapshot = await db
 			.collection("highscore")
 			.orderBy("score", "desc")
+			.where("needsApproval", "==", false) // Only get scores that do not need approval
 			.limit(10)
 			.get();
 		const leaderboard: LeaderboardEntry[] = [];

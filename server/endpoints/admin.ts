@@ -65,6 +65,7 @@ const loadApprovals = async (req: Request, res: Response) => {
 			.collection("highscore")
 			.orderBy("score", "desc")
 			.where("needsApproval", "==", "true")
+			.limit(10)
 			.get();
 		const leaderboard: ApprovalEntry[] = [];
 		leaderboardSnapshot.forEach((doc) => {
