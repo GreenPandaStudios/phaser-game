@@ -100,12 +100,30 @@ async function getTop10() {
 		...beforeNeededApproval.docs.map((doc) => doc.data() as LeaderboardEntry),
 	];
 
+	// Remove duplicates based on username
+	const uniqueLeaderboard = new Map<string, LeaderboardEntry>();
+
+	fullLeaderboard.forEach((entry) => {
+		if (!uniqueLeaderboard.has(entry.username)) {
+			uniqueLeaderboard.set(entry.username, entry);
+		} else {
+			// If the username already exists, keep the one with the higher score
+			const existingEntry = uniqueLeaderboard.get(entry.username)!;
+			if (entry.score > existingEntry.score) {
+				uniqueLeaderboard.set(entry.username, entry);
+			}
+		}
+	});
+
+	// Convert the Map back to an array
+	const fullLeaderboardArray = Array.from(uniqueLeaderboard.values());
+
 	// Sort the full leaderboard by score in descending order
-	fullLeaderboard.sort((a, b) => b.score - a.score);
+	fullLeaderboardArray.sort((a, b) => b.score - a.score);
 
 	// Turn into leaderboard entry
 	const leaderboard: LeaderboardEntry[] = [];
-	fullLeaderboard.forEach((doc) => {
+	fullLeaderboardArray.forEach((doc) => {
 		leaderboard.push({
 			username: doc.username,
 			score: doc.score,
