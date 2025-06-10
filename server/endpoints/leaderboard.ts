@@ -68,6 +68,7 @@ export const addScore = async (req: Request, res: Response) => {
 			const topScoresSnapshot = await db
 				.collection("highscore")
 				.orderBy("score", "desc")
+				.where("needsApproval", "!=", true) // Only get scores that do not need approval
 				.limit(10)
 				.get();
 
