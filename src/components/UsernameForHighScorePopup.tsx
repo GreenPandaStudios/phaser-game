@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { makeRequest } from "../utils";
+import { makeRequest, createScoreSignature } from "../utils";
 import { RegisterEvent, RemoveEvent } from "../game";
 import "./UsernameForHighScorePopup.css";
 
 interface HighScoreSubmission {
     username: string;
     score: string;
+    signature: string;
 }
 
 interface UsernameForHighScorePopupProps {
@@ -22,20 +23,26 @@ export const UsernameForHighScorePopup: React.FC<UsernameForHighScorePopupProps>
     const [username, setUsername] = useState('');
     const [inputValue, setInputValue] = useState('');
     const [currentScore, setCurrentScore] = useState(0);
+    const [currentSignature, setCurrentSignature] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Listen for game over events
     useEffect(() => {
-        const handleGameOver = (score: number) => {
+        const handleGameOver = async (score: number) => {
             // Check if this is a high score
             const highScore = localStorage.getItem('highScore');
             const currentHighScore = highScore ? parseInt(highScore, 10) : 0;
 
+
+
+
             // Only show popup if this is a high score
             if (score > currentHighScore) {
+                // Create the signature for the score
                 setCurrentScore(score);
+                setCurrentSignature(await createScoreSignature(score));
                 setIsVisible(true);
                 setError(null);
                 setSuccess(null);
@@ -76,7 +83,8 @@ export const UsernameForHighScorePopup: React.FC<UsernameForHighScorePopupProps>
             const encodedScore = btoa(currentScore.toString());
             await makeRequest<HighScoreSubmission, void>('/api/leaderboard/addScore', {
                 username: inputValue,
-                score: encodedScore
+                score: encodedScore,
+                signature: currentSignature || ''
             });
 
             // Update local storage with the new high score
@@ -93,7 +101,7 @@ export const UsernameForHighScorePopup: React.FC<UsernameForHighScorePopupProps>
             // Close popup after a short delay
             setTimeout(() => {
                 setIsVisible(false);
-            }, 2000);
+            }, 200);
         } catch (err) {
             setError("Failed to submit your score. Please try again.");
             console.error("Error submitting score:", err);
@@ -131,6 +139,13 @@ export const UsernameForHighScorePopup: React.FC<UsernameForHighScorePopupProps>
                         disabled={isSubmitting}
                     >
                         {isSubmitting ? "Submitting..." : "Submit Score"}
+                    </button>
+                    <button
+                        type="button"
+                        className="username-popup-close"
+                        onClick={() => setIsVisible(false)}
+                    >
+                        Play Again (Don't Save Score)
                     </button>
 
                     {error && <div className="username-popup-error">{error}</div>}

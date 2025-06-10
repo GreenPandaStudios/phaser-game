@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { verifyScoreSignature } from "../utils/index.js";
 import { db } from "../firebase/index.js";
 export interface LeaderboardEntry {
 	username: string;
@@ -26,7 +27,7 @@ export const loadLeaderboard = async (req: Request, res: Response) => {
 };
 
 export const addScore = async (req: Request, res: Response) => {
-	const { username, score } = req.body;
+	const { username, score, signature } = req.body;
 
 	// Decrypt the score using the provided encryption method
 	// Base64 decode the score
@@ -44,6 +45,17 @@ export const addScore = async (req: Request, res: Response) => {
 
 		// Update the score in the request body with the decoded value
 		req.body.score = numericScore;
+
+		// verify the signature
+		if (!signature || typeof signature !== "string") {
+			return res.status(400).json({ error: "Invalid signature format" });
+		}
+
+		const isValid = await verifyScoreSignature(numericScore, signature);
+
+		if (!isValid) {
+			return res.status(400).json({ error: "Stop cheating!" });
+		}
 
 		try {
 			await db.collection("highscore").add({ username, score: numericScore });
