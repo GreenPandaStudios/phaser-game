@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { Request, response, Response } from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import {
@@ -35,6 +35,7 @@ app.post("/api/admin/reject", Admin.rejectEntry);
 // For any other route, serve the index.html from the Vite build
 app.get("*", (_req, res) => {
 	res.sendFile(path.resolve(viteBuildPath, "index.html"));
+	res.cookie("x-header", "no-hack"); // Set a cookie for the client
 });
 app.listen(port, () => {
 	console.log(`Server listening at http://localhost:${port}`);

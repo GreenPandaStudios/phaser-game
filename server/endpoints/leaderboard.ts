@@ -19,6 +19,21 @@ export const loadLeaderboard = async (req: Request, res: Response) => {
 
 export const addScore = async (req: Request, res: Response) => {
 	const { username, score, signature } = req.body;
+	if (
+		!req.headers ||
+		!req.headers["x-header"] ||
+		req.headers["x-header"] !== "MakeRequest"
+	) {
+		return res.status(403).json({ error: "Unauthorized request" });
+	}
+
+	if (
+		!req.cookies ||
+		!req.cookies["x-header"] ||
+		req.cookies["x-header"] !== "no-hack"
+	) {
+		return res.status(401).json({ error: "Unauthorized request" });
+	}
 
 	// Decrypt the score using the provided encryption method
 	// Base64 decode the score

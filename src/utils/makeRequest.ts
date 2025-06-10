@@ -15,6 +15,7 @@ export async function makeRequest<TRequest, TResponse>(
 		options.body = JSON.stringify(data);
 		options.headers = {
 			"Content-Type": "application/json",
+			"x-header": "MakeRequest",
 		};
 	}
 
