@@ -96,7 +96,7 @@ async function getTop10() {
 
 	// Merge the two snapshots to get the full leaderboard
 	const fullLeaderboard = [
-		...topScoresSnapshot.docs.map((doc) => doc.data() as ),
+		...topScoresSnapshot.docs.map((doc) => doc.data() as LeaderboardEntry),
 		...beforeNeededApproval.docs.map((doc) => doc.data() as LeaderboardEntry),
 	];
 
