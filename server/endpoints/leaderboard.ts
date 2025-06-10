@@ -4,8 +4,8 @@ import { db } from "../firebase/index.js";
 export interface LeaderboardEntry {
 	username: string;
 	score: number;
+	needsApproval: boolean | undefined;
 }
-
 
 export const loadLeaderboard = async (req: Request, res: Response) => {
 	try {
@@ -17,7 +17,11 @@ export const loadLeaderboard = async (req: Request, res: Response) => {
 		const leaderboard: LeaderboardEntry[] = [];
 		leaderboardSnapshot.forEach((doc) => {
 			const data = doc.data() as LeaderboardEntry;
-			leaderboard.push({ username: data.username, score: data.score });
+			leaderboard.push({
+				username: data.username,
+				score: data.score,
+				needsApproval: false,
+			});
 		});
 		return res.json(leaderboard); // Return the leaderboard as JSON
 	} catch (error) {
@@ -58,8 +62,31 @@ export const addScore = async (req: Request, res: Response) => {
 		}
 
 		try {
-			await db.collection("highscore").add({ username, score: numericScore });
-			res.status(200).json({ message: "Score added successfully" });
+			let needsApproval = false;
+			// If the score is is in the top 10, mark it as needing approval
+			const topScoresSnapshot = await db
+				.collection("highscore")
+				.orderBy("score", "desc")
+				.limit(10)
+				.get();
+
+			// Check if there are any scores in the top 10 that are less than or equal to the current score
+			const topScores = topScoresSnapshot.docs.map((doc) => doc.data().score);
+			if (topScores.find(({ score }) => score <= numericScore)) {
+				needsApproval = true;
+			}
+
+			// Add the score to the database
+			await db
+				.collection("highscore")
+				.add({ username, score: numericScore, needsApproval });
+
+			res.status(200).json({
+				message:
+					"Score added successfully." + needsApproval
+						? "Your in the top 10! Your score needs to be reviewed"
+						: "",
+			});
 		} catch (error) {
 			console.error("Error adding score:", error);
 			res.status(500).json({ error: "Failed to add score" });

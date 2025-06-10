@@ -20,8 +20,12 @@ const router = createBrowserRouter([
       },
       {
         path: 'leaderboard',
-        element: <LeaderBoard />,
+        element: <LeaderBoard isApprovalQueue={false} />,
       },
+      {
+        path: 'admin',
+        element: <LeaderBoard isApprovalQueue={true} />
+      }
     ],
   },
 ]);

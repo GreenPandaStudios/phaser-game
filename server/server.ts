@@ -1,7 +1,12 @@
 import express, { Request, Response } from "express";
 import path from "path";
 import { fileURLToPath } from "url";
-import { loadLeaderboard, addScore, updateScore } from "./endpoints/index.js";
+import {
+	loadLeaderboard,
+	addScore,
+	updateScore,
+	Admin,
+} from "./endpoints/index.js";
 const app = express();
 const port = process.env.PORT || 8080; // Backend server port
 // --- ES Module Boilerplate for __dirname ---
@@ -20,6 +25,12 @@ app.use(express.json());
 app.post("/api/leaderboard", loadLeaderboard);
 app.post("/api/leaderboard/addScore", addScore);
 app.post("/api/score/updateScore", updateScore);
+
+// Admin routes
+app.get("/admin/login", Admin.login);
+app.post("/api/admin/approvals", Admin.loadApprovals);
+app.post("/api/admin/approve", Admin.approveEntry);
+app.post("/api/admin/reject", Admin.rejectEntry);
 
 // For any other route, serve the index.html from the Vite build
 app.get("*", (_req, res) => {
