@@ -67,6 +67,7 @@ const loadApprovals = async (req: Request, res: Response) => {
 			.where("needsApproval", "==", "true")
 			.limit(10)
 			.get();
+
 		const leaderboard: ApprovalEntry[] = [];
 		leaderboardSnapshot.forEach((doc) => {
 			const data = doc.data() as LeaderboardEntry;
@@ -77,6 +78,7 @@ const loadApprovals = async (req: Request, res: Response) => {
 				id: doc.id, // Add the document ID to the entry
 			});
 		});
+
 		return res.json(leaderboard); // Return the leaderboard approvals as JSON
 	} catch (error) {
 		console.error("Error loading leaderboard:", error);

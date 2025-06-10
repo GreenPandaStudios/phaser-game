@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { verifyScoreSignature } from "../utils/index.js";
 import { db } from "../firebase/index.js";
+import { get } from "http";
 export interface LeaderboardEntry {
 	username: string;
 	score: number;
@@ -9,22 +10,7 @@ export interface LeaderboardEntry {
 
 export const loadLeaderboard = async (req: Request, res: Response) => {
 	try {
-		const leaderboardSnapshot = await db
-			.collection("highscore")
-			.orderBy("score", "desc")
-			.where("needsApproval", "!=", true) // Only get scores that do not need approval
-			.limit(10)
-			.get();
-		const leaderboard: LeaderboardEntry[] = [];
-		leaderboardSnapshot.forEach((doc) => {
-			const data = doc.data() as LeaderboardEntry;
-			leaderboard.push({
-				username: data.username,
-				score: data.score,
-				needsApproval: false,
-			});
-		});
-		return res.json(leaderboard); // Return the leaderboard as JSON
+		return res.json(await getTop10()); // Return the leaderboard as JSON
 	} catch (error) {
 		console.error("Error loading leaderboard:", error);
 		res.status(500).json({ error: "Failed to load leaderboard" });
@@ -64,17 +50,11 @@ export const addScore = async (req: Request, res: Response) => {
 
 		try {
 			let needsApproval = false;
-			// If the score is is in the top 10, mark it as needing approval
-			const topScoresSnapshot = await db
-				.collection("highscore")
-				.orderBy("score", "desc")
-				.where("needsApproval", "!=", true) // Only get scores that do not need approval
-				.limit(10)
-				.get();
+			// Get the top 10 scores from the database
+			const topScoresSnapshot = await getTop10();
 
 			// Check if there are any scores in the top 10 that are less than or equal to the current score
-			const topScores = topScoresSnapshot.docs.map((doc) => doc.data().score);
-			if (topScores.find(({ score }) => score <= numericScore)) {
+			if (topScoresSnapshot.find(({ score }) => score <= numericScore)) {
 				needsApproval = true;
 			}
 
@@ -98,3 +78,41 @@ export const addScore = async (req: Request, res: Response) => {
 		return res.status(400).json({ error: "Failed to decode score" });
 	}
 };
+
+async function getTop10() {
+	// If the score is is in the top 10, mark it as needing approval
+	const topScoresSnapshot = await db
+		.collection("highscore")
+		.orderBy("score", "desc")
+		.where("needsApproval", "!=", true) // Only get scores that do not need approval
+		.limit(10)
+		.get();
+
+	const beforeNeededApproval = await db
+		.collection("highscore")
+		.orderBy("score", "desc")
+		.limit(10)
+		.get();
+
+	// Merge the two snapshots to get the full leaderboard
+	const fullLeaderboard = [
+		...topScoresSnapshot.docs.map((doc) => doc.data() as ),
+		...beforeNeededApproval.docs.map((doc) => doc.data() as LeaderboardEntry),
+	];
+
+	// Sort the full leaderboard by score in descending order
+	fullLeaderboard.sort((a, b) => b.score - a.score);
+
+	// Turn into leaderboard entry
+	const leaderboard: LeaderboardEntry[] = [];
+	fullLeaderboard.forEach((doc) => {
+		leaderboard.push({
+			username: doc.username,
+			score: doc.score,
+			needsApproval: doc.needsApproval || false,
+		});
+	});
+
+	// Return the top 10 entries
+	return leaderboard.slice(0, 10);
+}
