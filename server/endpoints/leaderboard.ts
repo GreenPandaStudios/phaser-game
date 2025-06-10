@@ -87,57 +87,22 @@ export const addScore = async (req: Request, res: Response) => {
 };
 
 async function getTop10() {
-	// If the score is is in the top 10, mark it as needing approval
-	const topScoresSnapshot = await db
-		.collection("highscore")
-		.orderBy("score", "desc")
-		.where("needsApproval", "!=", true) // Only get scores that do not need approval
-		.limit(10)
-		.get();
-
 	const beforeNeededApproval = await db
 		.collection("highscore")
 		.orderBy("score", "desc")
 		.limit(10)
 		.get();
 
-	// Merge the two snapshots to get the full leaderboard
-	const fullLeaderboard = [
-		...topScoresSnapshot.docs.map((doc) => doc.data() as LeaderboardEntry),
-		...beforeNeededApproval.docs.map((doc) => doc.data() as LeaderboardEntry),
-	];
-
-	// Remove duplicates based on username
-	const uniqueLeaderboard = new Map<string, LeaderboardEntry>();
-
-	fullLeaderboard.forEach((entry) => {
-		if (!uniqueLeaderboard.has(entry.username)) {
-			uniqueLeaderboard.set(entry.username, entry);
-		} else {
-			// If the username already exists, keep the one with the higher score
-			const existingEntry = uniqueLeaderboard.get(entry.username)!;
-			if (entry.score > existingEntry.score) {
-				uniqueLeaderboard.set(entry.username, entry);
-			}
-		}
-	});
-
-	// Convert the Map back to an array
-	const fullLeaderboardArray = Array.from(uniqueLeaderboard.values());
-
-	// Sort the full leaderboard by score in descending order
-	fullLeaderboardArray.sort((a, b) => b.score - a.score);
-
-	// Turn into leaderboard entry
 	const leaderboard: LeaderboardEntry[] = [];
-	fullLeaderboardArray.forEach((doc) => {
+	beforeNeededApproval.forEach((doc) => {
+		const d = doc.data() as LeaderboardEntry;
 		leaderboard.push({
-			username: doc.username,
-			score: doc.score,
-			needsApproval: doc.needsApproval || false,
+			username: d.username,
+			score: d.score,
+			needsApproval: d.needsApproval || false,
 		});
 	});
 
 	// Return the top 10 entries
-	return leaderboard.slice(0, 10);
+	return leaderboard;
 }
