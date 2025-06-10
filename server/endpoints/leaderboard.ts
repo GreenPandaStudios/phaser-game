@@ -27,14 +27,6 @@ export const addScore = async (req: Request, res: Response) => {
 		return res.status(403).json({ error: "Unauthorized request" });
 	}
 
-	if (
-		!req.cookies ||
-		!req.cookies["x-header"] ||
-		req.cookies["x-header"] !== "no-hack"
-	) {
-		return res.status(401).json({ error: "Unauthorized request" });
-	}
-
 	// Decrypt the score using the provided encryption method
 	// Base64 decode the score
 	// Ensure score is a string before decoding
